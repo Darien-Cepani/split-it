@@ -3,11 +3,15 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>SplitIt - Bill Splitting App</title>
+		<title>SplitIt</title>
+		<link rel="icon" type="image/png" href="media/logo/icon.png" />
 		<script src="https://cdn.tailwindcss.com"></script>
 		<link
 			rel="stylesheet"
-			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+			integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+			crossorigin="anonymous"
+			referrerpolicy="no-referrer" />
 		<link
 			rel="stylesheet"
 			href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" />
@@ -15,6 +19,7 @@
 		<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+		<link rel="stylesheet" href="css/styles.css" />
 		<script>
 			tailwind.config = {
 				darkMode: "class",
@@ -22,12 +27,16 @@
 					extend: {
 						colors: {
 							primary: {
-								light: "#ff6161",
-								dark: "#9e0000",
+								light: "#8000f8",
+								dark: "#6700c7",
 							},
 							secondary: {
-								light: "#737373",
+								light: "#5f5f5f",
 								dark: "#8c8c8c",
+							},
+							danger: {
+								light: "#f44336",
+								dark: "#cf2e22",
 							},
 							background: {
 								light: "#ebebeb",
@@ -42,358 +51,248 @@
 				},
 			};
 		</script>
-		<style>
-			@import url("https://fonts.googleapis.com/css?family=Unbounded:700|Montserrat:400");
-
-			body {
-				font-family: "Montserrat";
-				font-weight: 400;
-			}
-
-			h1,
-			h2,
-			h3,
-			h4,
-			h5 {
-				font-family: "Unbounded";
-				font-weight: 700;
-			}
-
-			html {
-				font-size: 100%;
-			}
-
-			h1 {
-				font-size: 4.21rem;
-			}
-
-			h2 {
-				font-size: 3.158rem;
-			}
-
-			h3 {
-				font-size: 2.369rem;
-			}
-
-			h4 {
-				font-size: 1.777rem;
-			}
-
-			h5 {
-				font-size: 1.333rem;
-			}
-
-			small {
-				font-size: 0.75rem;
-			}
-
-			.transition-all {
-				transition: all 0.3s ease;
-			}
-
-			.dataTables_wrapper .dataTables_length,
-			.dataTables_wrapper .dataTables_filter,
-			.dataTables_wrapper .dataTables_info,
-			.dataTables_wrapper .dataTables_processing,
-			.dataTables_wrapper .dataTables_paginate {
-				color: inherit !important;
-			}
-
-			.dataTables_wrapper .dataTables_paginate .paginate_button {
-				color: inherit !important;
-			}
-
-			.dataTables_wrapper .dataTables_paginate .paginate_button.current {
-				color: white !important;
-				background: #4f46e5 !important;
-				border: 1px solid #4f46e5 !important;
-			}
-
-			.dark
-				.dataTables_wrapper
-				.dataTables_paginate
-				.paginate_button.current {
-				background: #6366f1 !important;
-				border: 1px solid #6366f1 !important;
-			}
-
-			.dark .dataTables_wrapper {
-				color: #fff !important;
-			}
-
-			.dark .dataTables_wrapper .dataTable {
-				color: #fff !important;
-			}
-
-			.dark .dataTables_wrapper .dataTable thead th,
-			.dark .dataTables_wrapper .dataTable thead td {
-				color: #fff !important;
-			}
-
-			.dark .dataTables_wrapper .dataTable tbody tr {
-				background-color: #374151 !important;
-				color: #fff !important;
-			}
-
-			.dark .dataTables_wrapper .dataTable tbody tr:hover {
-				background-color: #4b5563 !important;
-			}
-
-			@keyframes slideIn {
-				from {
-					transform: translateY(100%);
-					opacity: 0;
-				}
-				to {
-					transform: translateY(0);
-					opacity: 1;
-				}
-			}
-
-			.slide-in {
-				animation: slideIn 0.5s ease-out;
-			}
-
-			@keyframes fadeIn {
-				from {
-					opacity: 0;
-				}
-				to {
-					opacity: 1;
-				}
-			}
-
-			.fade-in {
-				animation: fadeIn 0.5s ease-out;
-			}
-
-			@keyframes scaleIn {
-				from {
-					transform: scale(0.9);
-					opacity: 0;
-				}
-				to {
-					transform: scale(1);
-					opacity: 1;
-				}
-			}
-
-			.scale-in {
-				animation: scaleIn 0.3s ease-out;
-			}
-
-			.scrollable-table {
-				max-height: 300px;
-				overflow-y: auto;
-			}
-
-			.dataTables_wrapper .dataTables_filter {
-				float: none;
-				text-align: left;
-			}
-
-			.bill-summary-header {
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-				margin-bottom: 1rem;
-			}
-
-			.editable:hover {
-				background-color: rgba(0, 0, 0, 0.1);
-				cursor: pointer;
-			}
-
-			.dark .editable:hover {
-				background-color: rgba(255, 255, 255, 0.1);
-			}
-
-			body {
-				max-height: 100vh;
-				overflow-y: hidden;
-			}
-		</style>
 	</head>
-	<body
-		class="bg-background-light dark:bg-background-dark text-gray-800 dark:text-white transition-all">
-		<div class="container mx-auto p-4 max-w-7xl">
+	<body class="dark:text-white transition-all max-h-screen overflow-y-auto">
+		<div class="gradient-bg dark:bg-card-dark max-h-100%">
+			<svg xmlns="http://www.w3.org/2000/svg" class="noiseBg">
+				<filter id="noiseFilterBg">
+					<feTurbulence
+						type="fractalNoise"
+						baseFrequency="1"
+						stitchTiles="stitch" />
+				</filter>
+
+				<rect
+					width="100%"
+					height="100%"
+					preserveAspectRatio="xMidYMid meet"
+					filter="url(#noiseFilterBg)" />
+			</svg>
+			<svg xmlns="http://www.w3.org/2000/svg" class="svgBlur">
+				<defs>
+					<filter id="goo">
+						<feGaussianBlur
+							in="SourceGraphic"
+							stdDeviation="15"
+							result="blur" />
+						<feColorMatrix
+							in="blur"
+							mode="matrix"
+							values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8"
+							result="goo" />
+						<feBlend in="SourceGraphic" in2="goo" />
+					</filter>
+				</defs>
+			</svg>
+			<div class="gradients-container">
+				<div class="g1"></div>
+				<div class="g2"></div>
+				<div class="g3"></div>
+				<div class="g4"></div>
+				<div class="g5"></div>
+				<div class="interactive"></div>
+			</div>
+		</div>
+
+		<div class="container mx-auto p-4 z-index-10">
 			<div
 				id="home-screen"
-				class="flex items-center justify-center h-screen">
+				class="flex flex-col items-center justify-center h-100p"
+				style="height: calc(100vh - 80px)">
 				<div
 					class="bg-card-light dark:bg-card-dark p-8 rounded-lg shadow-lg text-center scale-in">
-					<h1 class="text-4xl font-bold mb-8">SplitIt</h1>
+					<img
+						src="media/logo/logo.png"
+						alt="SplitIt Logo"
+						class="logo w-64 h-auto mx-auto my-8 flex dark:hidden" />
+					<img
+						src="media/logo/logoDark.png"
+						alt="SplitIt Logo"
+						class="logo-dark w-64 h-auto mx-auto my-8 hidden dark:flex" />
 					<button
 						onclick="startNewBill()"
 						class="bg-primary-light dark:bg-primary-dark hover:opacity-80 text-white font-bold py-2 px-4 rounded transition-all">
 						<i class="fas fa-plus mr-2"></i> New Bill
 					</button>
 				</div>
+
+				<!-- <div
+					id="ad-container"
+					class="fixed bottom-0 left-0 right-0 p-4 text-center">
+					<p>Advertisement Space</p>
+				</div> -->
 			</div>
 
 			<div id="bill-screen" class="hidden fade-in">
-				<div class="w-full flex justify-between items-center">
-					<div class="w-1/3 p-2 rounded-lg text-center">
+				<nav
+					class="w-full flex flex-col lg:flex-row justify-between items-center p-4 mb-6 bg-card-light dark:bg-card-dark shadow-md rounded-lg">
+					<div
+						class="flex items-center justify-between w-full lg:w-auto">
+						<img
+							src="media/logo/logo.png"
+							alt="SplitIt Logo"
+							class="w-32 h-auto dark:hidden" />
+						<img
+							src="media/logo/logoDark.png"
+							alt="SplitIt Logo"
+							class="w-32 h-auto hidden dark:block" />
 						<button
-							id="close-bill"
-							onclick="closeBill()"
-							class="bg-primary-light dark:bg-primary-dark hover:opacity-80 text-white font-bold py-2 px-4 rounded transition-all">
-							<i class="fas fa-times mr-2"></i>Close Bill
+							id="mobileMenuButton"
+							class="lg:hidden text-2xl">
+							<i class="fas fa-bars"></i>
 						</button>
 					</div>
-					<div class="w-1/3 p-2 rounded-lg text-center">
-						<h1 class="text-4xl font-bold mb-8 text-center">
-							SplitIt
-						</h1>
-						<p id="billDate" class="text-center mb-4"></p>
-					</div>
-					<div class="w-1/3 p-2 rounded-lg text-center">
-						<a
-							href="https://buymeacoffee.com/darienc"
-							target="”_blank”"
-							id="donateButton"
-							class="bg-yellow-400 text-black px-4 py-3 mx-2 rounded-full transition-all">
-							<i class="fas fa-donate"></i> Donate
-						</a>
-
-						<button
-							id="darkModeToggle"
-							class="bg-gray-200 dark:bg-gray-700 px-4 py-3 rounded-full transition-all">
-							<i class="fas fa-moon dark:hidden"></i>
-							<i class="fas fa-sun hidden dark:inline"></i>
-						</button>
-					</div>
-				</div>
-
-				<div class="flex flex-col md:flex-row gap-4">
-					<div class="w-full md:w-1/2">
+					<p
+						id="billDate"
+						class="text-center my-2 md:my-0 w-full md:w-auto text-sm md:text-base"></p>
+					<div
+						id="navbarMenu"
+						class="fixed z-10 top-0 right-0 h-full w-64 bg-card-light dark:bg-card-dark shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out lg:static lg:h-auto lg:w-auto lg:shadow-none lg:transform-none lg:transition-none lg:flex lg:items-center">
 						<div
-							class="bg-card-light dark:bg-card-dark p-6 rounded-lg shadow-lg mb-4">
-							<h2 class="text-2xl font-semibold mb-4">People</h2>
-							<div class="flex gap-2 mb-4">
-								<input
-									type="text"
-									id="personName"
-									placeholder="Enter person's name"
-									class="flex-grow p-2 border rounded dark:bg-gray-800 dark:border-gray-700" />
-								<button
-									onclick="addPerson()"
-									class="bg-primary-light dark:bg-primary-dark hover:opacity-80 text-white font-bold py-2 px-4 rounded transition-all">
-									<i class="fas fa-user-plus"></i>
-								</button>
-							</div>
-							<div class="scrollable-table">
-								<table
-									id="peopleSummary"
-									class="w-full table-auto">
-									<thead>
-										<tr>
-											<th class="p-2 text-left">Name</th>
-											<th class="p-2 text-left">
-												Total Owed
-											</th>
-											<th class="p-2 text-left">
-												Balance
-											</th>
-											<th class="p-2 text-left">
-												Action
-											</th>
-										</tr>
-									</thead>
-									<tbody></tbody>
-								</table>
-							</div>
-						</div>
-					</div>
-					<div class="w-full md:w-1/2">
-						<div
-							class="bg-card-light dark:bg-card-dark p-6 rounded-lg shadow-lg mb-4">
-							<h2 class="text-2xl font-semibold mb-4">Bill</h2>
-							<div class="grid grid-cols-2 gap-2 mb-2">
-								<input
-									type="text"
-									id="itemName"
-									placeholder="Item name"
-									class="p-2 border rounded dark:bg-gray-800 dark:border-gray-700" />
-								<input
-									type="number"
-									id="itemPrice"
-									placeholder="Price"
-									class="p-2 border rounded dark:bg-gray-800 dark:border-gray-700" />
-								<input
-									type="number"
-									id="itemQuantity"
-									placeholder="Quantity"
-									class="p-2 border rounded dark:bg-gray-800 dark:border-gray-700" />
-								<select
-									id="itemAssignee"
-									class="p-2 border rounded dark:bg-gray-800 dark:border-gray-700"></select>
-							</div>
+							class="flex flex-col h-full p-4 lg:flex-row lg:p-0">
 							<button
-								onclick="addItem()"
-								class="bg-primary-light dark:bg-primary-dark hover:opacity-80 text-white font-bold py-2 px-4 rounded transition-all mb-4">
-								<i class="fas fa-plus mr-2"></i>Add Item
+								id="closeMenuButton"
+								class="lg:hidden self-end text-2xl mb-4">
+								<i class="fas fa-times"></i>
 							</button>
-							<div class="bill-summary-header">
-								<h2 class="text-2xl font-semibold">
-									Bill Summary
-								</h2>
-								<div
-									id="billSummary_filter"
-									class="dataTables_filter"></div>
-							</div>
-							<div class="scrollable-table">
-								<table
-									id="billSummary"
-									class="w-full table-auto">
-									<thead>
-										<tr>
-											<th class="p-2 text-left">Item</th>
-											<th class="p-2 text-left">Price</th>
-											<th class="p-2 text-left">
-												Quantity
-											</th>
-											<th class="p-2 text-left">
-												Assignee
-											</th>
-											<th class="p-2 text-left">Total</th>
-											<th class="p-2 text-left">
-												Action
-											</th>
-										</tr>
-									</thead>
-									<tbody></tbody>
-								</table>
-							</div>
-							<div class="mt-4 text-right">
-								<h4>
-									Total: $<span id="billTotal">0.00</span>
-								</h4>
-							</div>
+							<a
+								href="https://buymeacoffee.com/darienc"
+								target="_blank"
+								id="donateButton"
+								class="bg-yellow-400 text-black px-4 py-2 my-2 lg:my-0 lg:mx-1 rounded transition-all text-center">
+								<i class="fas fa-donate"></i> Donate
+							</a>
+							<button
+								id="darkModeToggle"
+								class="bg-gray-200 dark:bg-gray-700 px-4 py-2 my-2 lg:my-0 lg:mx-1 rounded transition-all">
+								<i class="fas fa-moon dark:hidden"></i>
+								<i class="fas fa-sun hidden dark:inline"></i>
+							</button>
+							<button
+								id="close-bill"
+								onclick="closeBill()"
+								class="bg-danger-light dark:bg-danger-dark hover:opacity-80 text-white font-bold py-2 px-4 my-2 lg:my-0 lg:mx-2 rounded transition-all">
+								<i class="fas fa-times mr-2"></i>Close Bill
+							</button>
+						</div>
+					</div>
+				</nav>
+
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+					<div
+						class="bg-card-light dark:bg-card-dark p-6 rounded-lg shadow-lg">
+						<h2 class="text-2xl font-semibold mb-4">People</h2>
+						<div class="flex gap-2 mb-4">
+							<input
+								type="text"
+								id="personName"
+								placeholder="Enter person's name"
+								class="flex-grow p-2 border rounded dark:bg-gray-800 dark:border-gray-700" />
+							<button
+								onclick="addPerson()"
+								class="bg-primary-light dark:bg-primary-dark hover:opacity-80 text-white font-bold py-2 px-4 rounded transition-all">
+								<i class="fas fa-user-plus"></i>
+							</button>
+						</div>
+						<div class="scrollable-table">
+							<table id="peopleSummary" class="w-full table-auto">
+								<thead>
+									<tr>
+										<th class="p-2 text-left">Name</th>
+										<th class="p-2 text-left">
+											Total Owed
+										</th>
+										<th class="p-2 text-left">Paid</th>
+										<th class="p-2 text-left">Action</th>
+									</tr>
+								</thead>
+								<tbody></tbody>
+							</table>
+						</div>
+					</div>
+
+					<div
+						class="bg-card-light dark:bg-card-dark p-6 rounded-lg shadow-lg">
+						<h2 class="text-2xl font-semibold mb-4">Bill</h2>
+						<div class="grid grid-cols-2 gap-2 mb-2">
+							<input
+								type="text"
+								id="itemName"
+								placeholder="Item name"
+								class="p-2 border rounded dark:bg-gray-800 dark:border-gray-700" />
+							<input
+								type="number"
+								id="itemPrice"
+								placeholder="Price"
+								class="p-2 border rounded dark:bg-gray-800 dark:border-gray-700" />
+							<input
+								type="number"
+								id="itemQuantity"
+								placeholder="Quantity"
+								class="p-2 border rounded dark:bg-gray-800 dark:border-gray-700" />
+							<select
+								id="itemAssignee"
+								class="p-2 border rounded dark:bg-gray-800 dark:border-gray-700"></select>
+						</div>
+						<button
+							onclick="addItem()"
+							class="bg-primary-light dark:bg-primary-dark hover:opacity-80 text-white font-bold py-2 px-4 rounded transition-all mb-4">
+							<i class="fas fa-plus mr-2"></i>Add Item
+						</button>
+						<div class="bill-summary-header">
+							<h2 class="text-2xl font-semibold">Bill Summary</h2>
+							<div
+								id="billSummary_filter"
+								class="dataTables_filter"></div>
+						</div>
+						<div class="scrollable-table">
+							<table id="billSummary" class="w-full table-auto">
+								<thead>
+									<tr>
+										<th class="p-2 text-left">Item</th>
+										<th class="p-2 text-left">Price</th>
+										<th class="p-2 text-left">Quantity</th>
+										<th class="p-2 text-left">Assignee</th>
+										<th class="p-2 text-left">Total</th>
+										<th class="p-2 text-left">Action</th>
+									</tr>
+								</thead>
+								<tbody></tbody>
+							</table>
+						</div>
+						<div class="mt-4 text-right">
+							<h4 class="text-2xl">
+								Total: $<span id="billTotal">0.00</span>
+							</h4>
 						</div>
 					</div>
 				</div>
 
-				<div class="mt-8 flex justify-between">
-					<div>
-						<button
-							onclick="downloadPDF()"
-							class="bg-secondary-light dark:bg-secondary-dark hover:opacity-80 text-white font-bold py-2 px-4 rounded transition-all mr-2">
-							<i class="fas fa-file-pdf mr-2"></i>Download PDF
-						</button>
-						<button
-							onclick="shareBill()"
-							class="bg-secondary-light dark:bg-secondary-dark hover:opacity-80 text-white font-bold py-2 px-4 rounded transition-all">
-							<i class="fas fa-share mr-2"></i>Share Bill
-						</button>
-					</div>
+				<div class="mt-8 flex justify-center">
+					<button
+						onclick="downloadPDF()"
+						class="bg-primary-light dark:bg-primary-dark hover:opacity-80 text-white font-bold py-2 px-4 rounded transition-all mr-2">
+						<i class="fas fa-file-pdf mr-2"></i>Download PDF
+					</button>
+					<button
+						onclick="shareBill()"
+						class="bg-primary-light dark:bg-primary-dark hover:opacity-80 text-white font-bold py-2 px-4 rounded transition-all">
+						<i class="fas fa-share mr-2"></i>Share Bill
+					</button>
 				</div>
+
+				<!-- <div
+					id="ad-container"
+					class="bottom-0 left-0 right-0 p-4 text-center">
+					<p>Advertisement Space</p>
+				</div> -->
 			</div>
 		</div>
 
+		<!-- Modals and toasts -->
 		<div
 			id="paymentModal"
-			class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+			class="aboveAll fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
 			<div
 				class="bg-card-light dark:bg-card-dark p-8 rounded-lg max-w-md w-full scale-in">
 				<h2 class="text-2xl font-semibold mb-4">Enter Payment</h2>
@@ -412,529 +311,11 @@
 		</div>
 
 		<div
-			id="ad-container"
-			class="fixed bottom-0 left-0 right-0 bg-gray-200 dark:bg-gray-800 p-4 text-center">
-			<p>Advertisement Space</p>
-		</div>
-
-		<div
 			id="toast"
 			class="fixed bottom-4 left-4 bg-green-500 text-white p-4 rounded-lg shadow-lg hidden transition-opacity duration-500">
 			<p id="toastMessage"></p>
 		</div>
+
+		<script src="js/scripts.js"></script>
 	</body>
-	<script>
-		let people = [];
-		let items = [];
-		let currentPerson = null;
-		let peopleSummaryTable, billSummaryTable;
-		let billStartDate;
-
-		function startNewBill() {
-			document.getElementById("home-screen").classList.add("hidden");
-			document.getElementById("bill-screen").classList.remove("hidden");
-			people = [];
-			items = [];
-			billStartDate = new Date();
-			document.getElementById(
-				"billDate"
-			).textContent = `Bill started on: ${billStartDate.toLocaleString()}`;
-			updatePeopleSummary();
-			updateBillSummary();
-			updateItemAssigneeDropdown();
-			saveToLocalStorage();
-		}
-
-		function closeBill() {
-			document.getElementById("home-screen").classList.remove("hidden");
-			document.getElementById("bill-screen").classList.add("hidden");
-			people = [];
-			items = [];
-			localStorage.removeItem("splitItData");
-		}
-
-		function addPerson() {
-			const name = document.getElementById("personName").value;
-			if (name) {
-				people.push({ name, totalOwed: 0, balance: 0 });
-				updatePeopleSummary();
-				updateItemAssigneeDropdown();
-				document.getElementById("personName").value = "";
-				saveToLocalStorage();
-				showToast(`${name} added successfully!`);
-			}
-		}
-
-		function removePerson(name) {
-			people = people.filter((person) => person.name !== name);
-			items = items.filter((item) => item.assignee !== name);
-			updatePeopleSummary();
-			updateBillSummary();
-			updateItemAssigneeDropdown();
-			saveToLocalStorage();
-			showToast(`${name} removed from the bill.`);
-		}
-
-		function addItem() {
-			const name = document.getElementById("itemName").value;
-			const price = parseFloat(
-				document.getElementById("itemPrice").value
-			);
-			const quantity = parseInt(
-				document.getElementById("itemQuantity").value
-			);
-			const assignee = document.getElementById("itemAssignee").value;
-
-			if (name && price && quantity && assignee) {
-				const total = price * quantity;
-				const existingItemIndex = items.findIndex(
-					(item) => item.name === name
-				);
-
-				if (existingItemIndex !== -1) {
-					items[existingItemIndex].quantity += quantity;
-					items[existingItemIndex].total += total;
-					if (items[existingItemIndex].assignee !== assignee) {
-						items[existingItemIndex].assignee += `, ${assignee}`;
-					}
-				} else {
-					items.push({ name, price, quantity, assignee, total });
-				}
-
-				updateBillSummary();
-				updatePeopleSummary();
-				clearItemInputs();
-				saveToLocalStorage();
-				showToast(`${name} added to the bill!`);
-			}
-		}
-
-		function removeItem(name) {
-			items = items.filter((item) => item.name !== name);
-			updateBillSummary();
-			updatePeopleSummary();
-			saveToLocalStorage();
-			showToast(`${name} removed from the bill.`);
-		}
-
-		function updatePeopleSummary() {
-			if (peopleSummaryTable) {
-				peopleSummaryTable.destroy();
-			}
-			const table = document.getElementById("peopleSummary");
-			const tbody = table.getElementsByTagName("tbody")[0];
-			tbody.innerHTML = "";
-
-			people.forEach((person) => {
-				person.totalOwed = items
-					.filter((item) => item.assignee.includes(person.name))
-					.reduce((sum, item) => {
-						const assignees = item.assignee.split(", ");
-						return sum + item.total / assignees.length;
-					}, 0);
-
-				const row = tbody.insertRow();
-				row.innerHTML = `
-                <td class="p-2 editable" data-field="name">${person.name}</td>
-                <td class="p-2">$${person.totalOwed.toFixed(2)}</td>
-                <td class="p-2">$${person.balance.toFixed(2)}</td>
-                <td class="p-2">
-                    <button onclick="openPaymentModal('${
-						person.name
-					}')" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-2 rounded transition-all mr-1">
-                        <i class="fas fa-money-bill-wave"></i>
-                    </button>
-                    <button onclick="removePerson('${
-						person.name
-					}')" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-2 rounded transition-all">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </td>
-            `;
-			});
-
-			peopleSummaryTable = $(table).DataTable({
-				paging: false,
-				searching: false,
-				info: false,
-			});
-
-			setupEditableFields(table, "people");
-		}
-
-		function updateBillSummary() {
-			if (billSummaryTable) {
-				billSummaryTable.destroy();
-			}
-			const table = document.getElementById("billSummary");
-			const tbody = table.getElementsByTagName("tbody")[0];
-			tbody.innerHTML = "";
-
-			let totalBill = 0;
-
-			items.forEach((item) => {
-				const row = tbody.insertRow();
-				row.innerHTML = `
-                <td class="p-2 editable" data-field="name">${item.name}</td>
-                <td class="p-2 editable" data-field="price">$${item.price.toFixed(
-					2
-				)}</td>
-                <td class="p-2 editable" data-field="quantity">${
-					item.quantity
-				}</td>
-                <td class="p-2 editable" data-field="assignee">${
-					item.assignee
-				}</td>
-                <td class="p-2">$${item.total.toFixed(2)}</td>
-                <td class="p-2">
-                    <button onclick="removeItem('${
-						item.name
-					}')" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-2 rounded transition-all">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </td>
-            `;
-				totalBill += item.total;
-			});
-
-			billSummaryTable = $(table).DataTable({
-				paging: false,
-				searching: true,
-				info: false,
-			});
-
-			document.getElementById("billTotal").textContent =
-				totalBill.toFixed(2);
-
-			setupEditableFields(table, "items");
-		}
-
-		function setupEditableFields(table, dataType) {
-			table.addEventListener("dblclick", function (e) {
-				const cell = e.target.closest(".editable");
-				if (!cell) return;
-
-				const text = cell.textContent;
-				const field = cell.dataset.field;
-				const input = document.createElement("input");
-				input.value = text;
-				cell.textContent = "";
-				cell.appendChild(input);
-				input.focus();
-
-				input.addEventListener("blur", function () {
-					const newValue = this.value;
-					cell.textContent = newValue;
-					updateData(
-						dataType,
-						cell.parentElement.rowIndex - 1,
-						field,
-						newValue
-					);
-				});
-
-				input.addEventListener("keypress", function (e) {
-					if (e.key === "Enter") {
-						this.blur();
-					}
-				});
-			});
-		}
-
-		function updateData(dataType, index, field, value) {
-			if (dataType === "people") {
-				people[index][field] = value;
-			} else if (dataType === "items") {
-				items[index][field] =
-					field === "price" || field === "quantity"
-						? parseFloat(value)
-						: value;
-				items[index].total = items[index].price * items[index].quantity;
-			}
-			updatePeopleSummary();
-			updateBillSummary();
-			saveToLocalStorage();
-		}
-
-		function updateItemAssigneeDropdown() {
-			const select = document.getElementById("itemAssignee");
-			select.innerHTML = "";
-			people.forEach((person) => {
-				const option = document.createElement("option");
-				option.value = person.name;
-				option.textContent = person.name;
-				select.appendChild(option);
-			});
-		}
-
-		function clearItemInputs() {
-			document.getElementById("itemName").value = "";
-			document.getElementById("itemPrice").value = "";
-			document.getElementById("itemQuantity").value = "";
-		}
-
-		function openPaymentModal(personName) {
-			currentPerson = people.find((p) => p.name === personName);
-			document.getElementById("paymentModal").classList.remove("hidden");
-			document.getElementById("paymentModal").classList.add("flex");
-			document.getElementById("paymentAmount").value = "";
-			document.getElementById("remainingAmount").textContent = "";
-		}
-
-		function processPayment() {
-			const paidAmount = parseFloat(
-				document.getElementById("paymentAmount").value
-			);
-			if (paidAmount && currentPerson) {
-				const remaining = paidAmount - currentPerson.totalOwed;
-				document.getElementById("remainingAmount").textContent =
-					remaining >= 0
-						? `Refund: $${remaining.toFixed(2)}`
-						: `Still owed: $${Math.abs(remaining).toFixed(2)}`;
-				currentPerson.balance += paidAmount;
-				updatePeopleSummary();
-				saveToLocalStorage();
-				showToast(
-					`Payment of $${paidAmount.toFixed(2)} processed for ${
-						currentPerson.name
-					}`
-				);
-			}
-		}
-
-		function saveToLocalStorage() {
-			localStorage.setItem(
-				"splitItData",
-				JSON.stringify({ people, items, billStartDate })
-			);
-		}
-
-		function createShareableUrl() {
-			// Retrieve the data from local storage
-			const data = localStorage.getItem("splitItData");
-
-			if (data) {
-				// Encode the data to make it URL-safe
-				const encodedData = encodeURIComponent(data);
-
-				// Create a new URL with the data as a query parameter
-				const baseUrl =
-					window.location.origin + window.location.pathname;
-				const shareableUrl = `${baseUrl}?data=${encodedData}`;
-
-				console.log("Shareable URL:", shareableUrl);
-				return shareableUrl;
-			}
-		}
-
-		function restoreDataFromUrl() {
-			// Parse the query string
-			const params = new URLSearchParams(window.location.search);
-			const encodedData = params.get("data");
-
-			if (encodedData) {
-				// Decode the JSON data
-				const decodedData = decodeURIComponent(encodedData);
-
-				// Save it back to local storage or use it directly
-				localStorage.setItem("splitItData", decodedData);
-
-				// Optionally, parse the data to use it in your app
-				const splitItData = JSON.parse(decodedData);
-
-				console.log("Restored Data:", splitItData);
-				loadFromLocalStorage();
-				return splitItData;
-			}
-		}
-
-		// Call the function to restore and use the data
-		restoreDataFromUrl();
-
-		function loadFromLocalStorage() {
-			const data = JSON.parse(localStorage.getItem("splitItData"));
-			if (data) {
-				people = data.people || [];
-				items = data.items || [];
-				billStartDate = new Date(data.billStartDate);
-				document.getElementById(
-					"billDate"
-				).textContent = `Bill started on: ${billStartDate.toLocaleString()}`;
-				updatePeopleSummary();
-				updateBillSummary();
-				updateItemAssigneeDropdown();
-				document.getElementById("home-screen").classList.add("hidden");
-				document
-					.getElementById("bill-screen")
-					.classList.remove("hidden");
-			}
-		}
-
-		function showToast(message) {
-			const toast = document.getElementById("toast");
-			const toastMessage = document.getElementById("toastMessage");
-			toastMessage.textContent = message;
-			toast.classList.remove("hidden");
-			toast.classList.add("opacity-100", "slide-in");
-			setTimeout(() => {
-				toast.classList.remove("opacity-100");
-				toast.classList.add("opacity-0");
-				setTimeout(() => {
-					toast.classList.add("hidden");
-					toast.classList.remove("slide-in");
-				}, 300);
-			}, 3000);
-		}
-
-		function downloadPDF() {
-			const { jsPDF } = window.jspdf;
-			const doc = new jsPDF();
-
-			// Add title and date
-			doc.setFontSize(20);
-			doc.text("SplitIt - Bill Summary", 14, 15);
-			doc.setFontSize(12);
-			doc.text(
-				`Bill started on: ${billStartDate.toLocaleString()}`,
-				14,
-				25
-			);
-
-			// Add People Summary Table
-			doc.setFontSize(16);
-			doc.text("People Summary", 14, 35);
-			const peopleHeaders = [["Name", "Total Owed", "Balance"]];
-			const peopleData = people.map((person) => [
-				person.name,
-				`$${person.totalOwed.toFixed(2)}`,
-				`$${person.balance.toFixed(2)}`,
-			]);
-			doc.autoTable({
-				head: peopleHeaders,
-				body: peopleData,
-				startY: 40,
-				theme: "grid",
-			});
-
-			// Add Bill Items Table
-			doc.setFontSize(16);
-			doc.text("Bill Items", 14, doc.lastAutoTable.finalY + 10);
-			const itemHeaders = [
-				["Item", "Price", "Quantity", "Assignee", "Total"],
-			];
-			const itemData = items.map((item) => [
-				item.name,
-				`$${item.price.toFixed(2)}`,
-				item.quantity,
-				item.assignee,
-				`$${item.total.toFixed(2)}`,
-			]);
-			doc.autoTable({
-				head: itemHeaders,
-				body: itemData,
-				startY: doc.lastAutoTable.finalY + 15,
-				theme: "grid",
-			});
-
-			// Add total
-			const totalBill = items.reduce((sum, item) => sum + item.total, 0);
-			doc.setFontSize(14);
-			doc.text(
-				`Total Bill: $${totalBill.toFixed(2)}`,
-				14,
-				doc.lastAutoTable.finalY + 10
-			);
-
-			doc.save("SplitIt_Bill.pdf");
-			showToast("PDF downloaded successfully!");
-		}
-
-		function shareBill() {
-			const billData = JSON.stringify({ people, items, billStartDate });
-			const encodedData = btoa(billData);
-			const shareUrl = createShareableUrl();
-
-			navigator.clipboard
-				.writeText(shareUrl)
-				.then(() => {
-					showToast("Share link copied to clipboard!");
-				})
-				.catch((err) => {
-					console.error("Failed to copy: ", err);
-				});
-		}
-
-		function loadSharedBill() {
-			const urlParams = new URLSearchParams(window.location.search);
-			const sharedData = urlParams.get("data");
-			if (sharedData) {
-				try {
-					const decodedData = JSON.parse(atob(sharedData));
-					console.log("Decoded Data" + decodedData);
-					people = decodedData.people;
-					items = decodedData.items;
-					billStartDate = new Date(decodedData.billStartDate);
-					startNewBill();
-					showToast("Shared bill loaded successfully!");
-				} catch (error) {
-					console.error("Error loading shared bill:", error);
-				}
-			}
-		}
-
-		// Dark mode toggle
-		const darkModeToggle = document.getElementById("darkModeToggle");
-		darkModeToggle.addEventListener("click", () => {
-			document.documentElement.classList.toggle("dark");
-			saveThemePreference();
-		});
-
-		function saveThemePreference() {
-			localStorage.setItem(
-				"theme",
-				document.documentElement.classList.contains("dark")
-					? "dark"
-					: "light"
-			);
-		}
-
-		function loadThemePreference() {
-			const theme = localStorage.getItem("theme");
-			if (theme === "dark") {
-				document.documentElement.classList.add("dark");
-			}
-		}
-
-		// Donation modal
-		const donateButton = document.getElementById("donateButton");
-		const donationModal = document.getElementById("donationModal");
-
-		donateButton.addEventListener("click", () => {
-			donationModal.classList.remove("hidden");
-			donationModal.classList.add("flex");
-		});
-
-		donationModal.addEventListener("click", (e) => {
-			if (e.target === donationModal) {
-				donationModal.classList.add("hidden");
-				donationModal.classList.remove("flex");
-			}
-		});
-
-		function processDonation() {
-			const amount = document.getElementById("donationAmount").value;
-			if (amount) {
-				showToast(`Thank you for your donation of $${amount}!`);
-				donationModal.classList.add("hidden");
-				donationModal.classList.remove("flex");
-			}
-		}
-
-		// Initialize
-		window.addEventListener("load", () => {
-			loadFromLocalStorage();
-			loadThemePreference();
-			loadSharedBill();
-		});
-	</script>
 </html>
