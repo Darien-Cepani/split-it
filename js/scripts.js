@@ -53,12 +53,17 @@ function setLocation() {
 function addPerson() {
 	const name = document.getElementById("personName").value;
 	if (name) {
-		people.push({ name, totalOwed: 0, balance: 0 });
-		updatePeopleSummary();
-		updateItemAssigneeDropdown();
-		document.getElementById("personName").value = "";
-		saveToLocalStorage();
-		showToast(`${name} added successfully!`);
+		const personExists = people.some((person) => person.name === name);
+		if (personExists) {
+			showToast(`${name} already exists!`, "error");
+		} else {
+			people.push({ name, totalOwed: 0, balance: 0 });
+			updatePeopleSummary();
+			updateItemAssigneeDropdown();
+			document.getElementById("personName").value = "";
+			saveToLocalStorage();
+			showToast(`${name} added successfully!`);
+		}
 	}
 }
 
@@ -69,7 +74,7 @@ function removePerson(name) {
 	updateBillSummary();
 	updateItemAssigneeDropdown();
 	saveToLocalStorage();
-	showToast(`${name} removed from the bill.`);
+	showToast(`${name} removed from the bill.`, "error");
 }
 
 function addItem() {
@@ -95,12 +100,14 @@ function clearItemInputs() {
 	document.getElementById("itemQuantity").value = "";
 }
 
-function removeItem(name) {
-	items = items.filter((item) => item.name !== name);
+function removeItem(name, assignee) {
+	items = items.filter(
+		(item) => !(item.name === name && item.assignee === assignee)
+	);
 	updateBillSummary();
 	updatePeopleSummary();
 	saveToLocalStorage();
-	showToast(`${name} removed from the bill.`);
+	showToast(`${name} removed for ${assignee} from the bill.`, "error");
 }
 
 function updatePeopleSummary() {
@@ -124,6 +131,7 @@ function updatePeopleSummary() {
                 <td class="p-2 editable" data-field="name">${person.name}</td>
                 <td class="p-2">$${person.totalOwed.toFixed(2)}</td>
                 <td class="p-2">$${person.balance.toFixed(2)}</td>
+				<td class="p-2">$${person.totalOwed.toFixed(2) - person.balance.toFixed(2)}</td>
                 <td class="p-2">
                     <button onclick="openPaymentModal('${
 						person.name
@@ -161,25 +169,21 @@ function updateBillSummary() {
 	items.forEach((item) => {
 		const row = tbody.insertRow();
 		row.innerHTML = `
-                <td class="p-2 editable" data-field="name">${item.name}</td>
-                <td class="p-2 editable" data-field="price">$${item.price.toFixed(
-					2
-				)}</td>
-                <td class="p-2 editable" data-field="quantity">${
-					item.quantity
-				}</td>
-                <td class="p-2 editable" data-field="assignee">${
-					item.assignee
-				}</td>
-                <td class="p-2">$${item.total.toFixed(2)}</td>
-                <td class="p-2">
-                    <button onclick="removeItem('${
-						item.name
-					}')" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-2 rounded transition-all">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </td>
-            `;
+            <td class="p-2 editable" data-field="name">${item.name}</td>
+            <td class="p-2 editable" data-field="price">$${item.price.toFixed(
+				2
+			)}</td>
+            <td class="p-2 editable" data-field="quantity">${item.quantity}</td>
+            <td class="p-2 editable" data-field="assignee">${item.assignee}</td>
+            <td class="p-2">$${item.total.toFixed(2)}</td>
+            <td class="p-2">
+                <button onclick="removeItem('${item.name}', '${
+			item.assignee
+		}')" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-2 rounded transition-all">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        `;
 		totalBill += item.total;
 	});
 
@@ -256,10 +260,15 @@ function updateItemAssigneeDropdown() {
 
 function openPaymentModal(personName) {
 	currentPerson = people.find((p) => p.name === personName);
+	document.getElementById("paidBy").innerHTML = currentPerson.name;
 	document.getElementById("paymentModal").classList.remove("hidden");
 	document.getElementById("paymentModal").classList.add("flex");
 	document.getElementById("paymentAmount").value = "";
 	document.getElementById("remainingAmount").textContent = "";
+}
+
+function closePaymentModal() {
+	document.getElementById("paymentModal").classList.add("hidden");
 }
 
 function processPayment() {
@@ -284,16 +293,17 @@ function processPayment() {
 }
 
 function saveToLocalStorage() {
+	const billDateElement = document.getElementById("billDate");
+	const locationMatch = billDateElement.textContent.match(/ @ (.+)$/);
+	const location = locationMatch ? locationMatch[1].trim() : null;
+
 	localStorage.setItem(
 		"splitItData",
 		JSON.stringify({
 			people,
 			items,
 			billStartDate,
-			location: document
-				.getElementById("billDate")
-				.textContent.split("@")[1]
-				?.trim(),
+			location,
 		})
 	);
 }
@@ -321,18 +331,37 @@ function loadFromLocalStorage() {
 		people = data.people || [];
 		items = data.items || [];
 		billStartDate = new Date(data.billStartDate) || new Date();
-		document.getElementById(
-			"billDate"
-		).textContent = `Bill started on: ${billStartDate.toLocaleString()}`;
+
+		// Hide home screen and show bill screen
+		document.getElementById("home-screen").classList.add("hidden");
+		document.getElementById("bill-screen").classList.remove("hidden");
+
+		// Update bill date display
+		const billDateElement = document.getElementById("billDate");
+		billDateElement.textContent = `Bill started on: ${billStartDate.toLocaleString()}`;
+		if (data.location) {
+			billDateElement.textContent += ` @ ${data.location}`;
+		}
+
 		updatePeopleSummary();
 		updateBillSummary();
 		updateItemAssigneeDropdown();
 	}
 }
 
-function showToast(message) {
+window.addEventListener("load", () => {
+	loadFromLocalStorage();
+	loadThemePreference();
+});
+
+function showToast(message, status = "success") {
 	const toast = document.getElementById("toast");
 	const toastMessage = document.getElementById("toastMessage");
+	if (status == "success") {
+		toast.classList.add("bg-green-500");
+	} else if (status == "error") {
+		toast.classList.add("bg-red-500");
+	}
 	toastMessage.textContent = message;
 	toast.classList.remove("hidden");
 	toast.classList.add("opacity-100", "slide-in");
