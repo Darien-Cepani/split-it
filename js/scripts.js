@@ -132,7 +132,7 @@ function updatePeopleSummary() {
                 <td class="p-2">$${person.totalOwed.toFixed(2)}</td>
                 <td class="p-2">$${person.balance.toFixed(2)}</td>
 				<td class="p-2">$${person.totalOwed.toFixed(2) - person.balance.toFixed(2)}</td>
-                <td class="p-2">
+                <td class="p-2 flex flex-row">
                     <button onclick="openPaymentModal('${
 						person.name
 					}')" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-2 rounded transition-all mr-1">
